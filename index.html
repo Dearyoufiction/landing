@@ -19,6 +19,27 @@
             overflow-x: hidden;
         }
 
+        /* 언어 전환 버튼 */
+        .language-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            padding: 8px 16px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .language-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
         /* 헤더 섹션 */
         .header {
             text-align: center;
@@ -395,6 +416,13 @@
                 height: 50px;
                 font-size: 25px;
             }
+
+            .language-toggle {
+                top: 15px;
+                right: 15px;
+                padding: 6px 12px;
+                font-size: 12px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -440,6 +468,11 @@
     </style>
 </head>
 <body>
+    <!-- 언어 전환 버튼 -->
+    <button class="language-toggle" onclick="toggleLanguage()">
+        <span id="langToggleText">English</span>
+    </button>
+
     <!-- 플로팅 배경 요소 -->
     <div class="floating-elements">
         <div class="floating-letter" style="top: 10%; left: 10%; font-size: 100px; animation-delay: 0s;">💌</div>
@@ -457,29 +490,29 @@
             </div>
         </div>
         <h1 class="app-title">Dear You</h1>
-        <p class="subtitle">세상 속 익명의 따뜻함</p>
+        <p class="subtitle" data-ko="세상 속 익명의 따뜻함" data-en="Anonymous Warmth in the World">세상 속 익명의 따뜻함</p>
     </header>
 
     <!-- 메인 콘텐츠 -->
     <div class="container">
         <!-- 소개 섹션 -->
         <section class="intro-section">
-            <p class="intro-text">
+            <p class="intro-text" data-ko="바다에 띄운 유리병 편지처럼, 당신의 마음을 세상 어딘가의 누군가에게 전해보세요." data-en="Like a message in a bottle floating on the ocean, share your heart with someone, somewhere in the world.">
                 바다에 띄운 유리병 편지처럼, 당신의 마음을 세상 어딘가의 누군가에게 전해보세요.
             </p>
-            <p class="intro-text">
+            <p class="intro-text" data-ko="Dear You는 전 세계 사람들과 익명으로 마음을 나누는 특별한 공간입니다. 당신이 쓴 편지는 랜덤으로 세상 어딘가의 한 사람에게 조용히 전달되고, 당신 역시 다른 누군가의 진심 어린 메시지를 받게 됩니다." data-en="Dear You is a special space where you can anonymously share your heart with people around the world. Your letter will be quietly delivered to someone, somewhere in the world at random, and you will also receive heartfelt messages from others.">
                 Dear You는 전 세계 사람들과 익명으로 마음을 나누는 특별한 공간입니다.
                 당신이 쓴 편지는 랜덤으로 세상 어딘가의 한 사람에게 조용히 전달되고,
                 당신 역시 다른 누군가의 진심 어린 메시지를 받게 됩니다.
             </p>
 
             <div class="features">
-                <h3 class="feature-title">이런 순간에 Dear You를 써보세요</h3>
+                <h3 class="feature-title" data-ko="이런 순간에 Dear You를 써보세요" data-en="Try Dear You in these moments">이런 순간에 Dear You를 써보세요</h3>
                 <ul class="feature-list">
-                    <li>힘든 하루를 보낸 누군가를 위로하고 싶을 때</li>
-                    <li>세상에 작은 선의를 전하고 싶을 때</li>
-                    <li>나만의 이야기로 다른 사람에게 희망을 주고 싶을 때</li>
-                    <li>익명의 따뜻함이 필요한 순간</li>
+                    <li data-ko="힘든 하루를 보낸 누군가를 위로하고 싶을 때" data-en="When you want to comfort someone who had a difficult day">힘든 하루를 보낸 누군가를 위로하고 싶을 때</li>
+                    <li data-ko="세상에 작은 선의를 전하고 싶을 때" data-en="When you want to spread small kindness to the world">세상에 작은 선의를 전하고 싶을 때</li>
+                    <li data-ko="나만의 이야기로 다른 사람에게 희망을 주고 싶을 때" data-en="When you want to give hope to others with your own story">나만의 이야기로 다른 사람에게 희망을 주고 싶을 때</li>
+                    <li data-ko="익명의 따뜻함이 필요한 순간" data-en="When you need anonymous warmth">익명의 따뜻함이 필요한 순간</li>
                 </ul>
             </div>
         </section>
@@ -522,13 +555,72 @@
         <!-- 다운로드 섹션 -->
         <section class="download-section">
             <button class="download-btn" onclick="handleDownload()">
-                앱 다운로드
+                <span data-ko="앱 다운로드" data-en="Download App">앱 다운로드</span>
             </button>
-            <p class="download-text">iOS · Android 지원</p>
+            <p class="download-text" data-ko="iOS · Android 지원" data-en="iOS · Android Support">iOS · Android 지원</p>
         </section>
     </div>
 
     <script>
+        // 언어 설정
+        let currentLanguage = 'ko';
+
+        // 지역 및 언어 감지
+        function detectLanguage() {
+            const userLang = navigator.language || navigator.userLanguage;
+            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+            // 한국어 브라우저 설정이거나 한국 시간대인 경우 한국어
+            if (userLang.startsWith('ko') || timeZone === 'Asia/Seoul') {
+                return 'ko';
+            }
+
+            // 그 외의 경우 영어
+            return 'en';
+        }
+
+        // 언어 전환 함수
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'ko' ? 'en' : 'ko';
+            updateLanguage();
+            localStorage.setItem('dearYouLanguage', currentLanguage);
+        }
+
+        // 언어 업데이트 함수
+        function updateLanguage() {
+            const elements = document.querySelectorAll('[data-ko][data-en]');
+            const langToggleText = document.getElementById('langToggleText');
+
+            elements.forEach(element => {
+                if (currentLanguage === 'ko') {
+                    element.textContent = element.getAttribute('data-ko');
+                } else {
+                    element.textContent = element.getAttribute('data-en');
+                }
+            });
+
+            // 언어 전환 버튼 텍스트 업데이트
+            langToggleText.textContent = currentLanguage === 'ko' ? 'English' : '한국어';
+
+            // HTML lang 속성 업데이트
+            document.documentElement.lang = currentLanguage;
+
+            // 페이지 제목 업데이트
+            if (currentLanguage === 'en') {
+                document.title = 'Dear You - Anonymous Warmth in the World';
+            } else {
+                document.title = 'Dear You - 세상 속 익명의 따뜻함';
+            }
+        }
+
+        // 초기 언어 설정
+        function initializeLanguage() {
+            // 저장된 언어 설정이 있으면 사용, 없으면 자동 감지
+            const savedLanguage = localStorage.getItem('dearYouLanguage');
+            currentLanguage = savedLanguage || detectLanguage();
+            updateLanguage();
+        }
+
         // 캐러셀 기능
         let currentSlide = 0;
         const slides = document.querySelectorAll('.carousel-slide');
@@ -597,20 +689,16 @@
 
             // iOS 감지
             if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                // App Store 링크로 이동 (실제 앱 링크로 교체 필요)
+                // App Store 링크로 이동
                 window.open('https://apps.apple.com/kr/app/dearyou-%EB%94%94%EC%96%B4%EC%9C%A0/id6749177049', '_blank');
             }
             // Android 감지
             else if (/android/i.test(userAgent)) {
-                // Google Play 링크로 이동 (실제 앱 링크로 교체 필요)
+                // Google Play 링크로 이동
                 window.open('https://play.google.com/store/apps/details?id=com.we.dearyou', '_blank');
             }
             // PC 또는 기타 기기
             else {
-                // 안내 페이지로 이동
-                // alert('Dear You는 모바일 앱입니다.\n스마트폰에서 다운로드해주세요.');
-                // 또는 QR코드가 있는 페이지로 이동
-                // window.open('/download-guide.html', '_blank');
                 window.open('https://play.google.com/store/apps/details?id=com.we.dearyou', '_blank');
             }
         }
@@ -638,8 +726,11 @@
             observer.observe(section);
         });
 
-        // 이미지 로드 처리 (실제 이미지가 있을 경우)
+        // 이미지 로드 처리
         window.addEventListener('load', () => {
+            // 언어 초기화
+            initializeLanguage();
+
             // 로고 이미지
             const logoImg = document.querySelector('.logo-img');
             if (logoImg) {
